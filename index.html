@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | CHICBLOOM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="https://github.com/rodrigos-aquino/Imagens_Teste/blob/main/Logo_FLOR_CHICBLOM.png?raw=true"/>
+    <style>
+        .login-container {
+            background: linear-gradient(135deg, rgba(117, 110, 108, 0.95) 0%, rgba(117, 110, 108) 100%);
+        }
+        .card {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        .credentials-info {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="min-h-screen flex items-center justify-center login-container">
+        <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-lg card">
+            <div class="text-center">
+                <div class="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-user text-blue-600 text-2xl"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-gray-900">Bem-vindo</h2>
+                <p class="mt-2 text-sm text-gray-600">Faça login para acessar o painel</p>
+            </div>
+          
+            <form id="loginForm" class="mt-8 space-y-6">
+                <div class="rounded-md shadow-sm space-y-4">
+                    <div>
+                        <label for="email" class="sr-only">Email</label>
+                        <input id="email" name="email" type="email" autocomplete="email" required
+                            class="appearance-none relative block w-full px-3 py-3 border border-gray-300
+                            placeholder-gray-500 text-gray-900 rounded-md focus:outline-none
+                            focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                            placeholder="Email">
+                    </div>
+                    <div>
+                        <label for="password" class="sr-only">Senha</label>
+                        <input id="password" name="password" type="password" autocomplete="current-password" required
+                            class="appearance-none relative block w-full px-3 py-3 border border-gray-300
+                            placeholder-gray-500 text-gray-900 rounded-md focus:outline-none
+                            focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                            placeholder="Senha">
+                    </div>
+                </div>
+
+                <!-- Mensagem de erro -->
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember-me" name="remember-me" type="checkbox"
+                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                            Lembrar-me
+                        </label>
+                    </div>
+
+                    <div class="text-sm">
+                        <a href="#" class="font-medium text-blue-600 hover:text-blue-500">
+                            Esqueceu sua senha?
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" id="loginButton"
+                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent
+                        text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700
+                        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                        disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </span>
+                        <span id="buttonText">Entrar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Credenciais válidas do sistema
+        const validCredentials = [
+            {
+                email: 'admin@chicbloom.com',
+                password: 'chicbloom123',
+                name: 'Administrador',
+                role: 'admin'
+            },
+            {
+                email: 'user@chicbloom.com',
+                password: 'user123',
+                name: 'Usuário',
+                role: 'user'
+            },
+            {
+                email: 'manager@chicbloom.com',
+                password: 'manager123',
+                name: 'Gerente',
+                role: 'manager'
+            },
+            {
+                email: 'rodrigo@chicbloom.com', 
+                password: 'digo1302',
+                name: 'Rodrigo',
+                role: 'manager'
+            }
+        ];
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const loginButton = document.getElementById('loginButton');
+            const buttonText = document.getElementById('buttonText');
+            
+            // Limpa mensagens de erro anteriores
+            errorMessage.style.display = 'none';
+            
+            // Validação básica
+            if (!email || !password) {
+                showError('Por favor, preencha todos os campos!');
+                return;
+            }
+            
+            // Mostra estado de carregamento
+            loginButton.disabled = true;
+            buttonText.textContent = 'Entrando...';
+            
+            // Simula delay de autenticação (opcional)
+            setTimeout(() => {
+                // Verifica as credenciais
+                const user = validCredentials.find(cred => 
+                    cred.email.toLowerCase() === email.toLowerCase() && 
+                    cred.password === password
+                );
+                
+                if (user) {
+                    // Login bem-sucedido
+                    const userData = {
+                        name: user.name,
+                        email: user.email,
+                        role: user.role,
+                        loggedIn: true,
+                        loginTime: new Date().toISOString()
+                    };
+                    
+                    // Armazena os dados do usuário no localStorage
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                    
+                    // Sucesso visual
+                    buttonText.textContent = 'Login realizado!';
+                    loginButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    loginButton.classList.add('bg-green-600');
+                    
+                    // Redireciona para o painel
+                    window.location.href = 'painel.html';
+                    
+                } else {
+                    // Credenciais inválidas
+                    showError('Email ou senha incorretos. Verifique suas credenciais e tente novamente.');
+                    resetButton();
+                }
+            }, 1000); // Simula 1 segundo de processamento
+        });
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function resetButton() {
+            const loginButton = document.getElementById('loginButton');
+            const buttonText = document.getElementById('buttonText');
+            
+            loginButton.disabled = false;
+            buttonText.textContent = 'Entrar';
+            loginButton.classList.remove('bg-green-600');
+            loginButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+        }
+
+        // Função para preencher automaticamente as credenciais de teste
+        function fillTestCredentials() {
+            document.getElementById('email').value = 'admin@chicbloom.com';
+            document.getElementById('password').value = 'chicbloom123';
+        }
+    </script>
+</body>
+</html>
