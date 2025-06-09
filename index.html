@@ -7,6 +7,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="https://github.com/rodrigos-aquino/Imagens_Teste/blob/main/Logo_FLOR_CHICBLOM.png?raw=true"/>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+
+    <script>
+    const firebaseConfig = {
+    apiKey: "AIzaSyCPxU7PTGojt6WxzcOixhRSQCTzVdu7720",
+    authDomain: "bdpessoal-4b5b8.firebaseapp.com",
+    databaseURL: "https://bdpessoal-4b5b8-default-rtdb.firebaseio.com",
+    projectId: "bdpessoal-4b5b8",
+    storageBucket: "bdpessoal-4b5b8.firebasestorage.app",
+    messagingSenderId: "1063713823398",
+    appId: "1:1063713823398:web:21886b544dbffe399cb267",
+    measurementId: "G-6DLSDL6E8K"
+    };
+    firebase.initializeApp(firebaseConfig);
+    </script>
+
     <style>
         .login-container {
             background: linear-gradient(135deg, rgba(117, 110, 108, 0.95) 0%, rgba(117, 110, 108) 100%);
@@ -33,11 +51,12 @@
     <div class="min-h-screen flex items-center justify-center login-container">
         <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-lg card">
             <div class="text-center">
-                <div class="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <i class="fas fa-user text-blue-600 text-2xl"></i>
-                </div>
-                <h2 class="text-3xl font-extrabold text-gray-900">Bem-vindo</h2>
-                <p class="mt-2 text-sm text-gray-600">Faça login para acessar o painel</p>
+            <div class="mx-auto w-16 h-16 rounded-full overflow-hidden flex items-center justify-center mb-4">
+                <img src="https://github.com/rodrigos-aquino/Imagens_Teste/blob/main/Logo_FLOR_CHICBLOM.png?raw=true" alt="Logo Chicbloom" class="w-full h-full object-cover">
+            </div>
+
+                <h2 class="text-3xl font-extrabold text-gray-900">Bem-Vindo</h2>
+                <p class="mt-2 text-sm text-gray-600">Faça Login Para Acessar o Painel de Gestão</p>
             </div>
           
             <form id="loginForm" class="mt-8 space-y-6">
@@ -73,7 +92,8 @@
                     </div>
 
                     <div class="text-sm">
-                        <a href="#" class="font-medium text-blue-600 hover:text-blue-500">
+                        <a href="#" id="forgotPasswordLink" class="font-medium text-blue-600 hover:text-blue-500">
+
                             Esqueceu sua senha?
                         </a>
                     </div>
@@ -96,114 +116,97 @@
     </div>
 
     <script>
-        // Credenciais válidas do sistema
-        const validCredentials = [
-            {
-                email: 'admin@chicbloom.com',
-                password: 'chicbloom123',
-                name: 'Administrador',
-                role: 'admin'
-            },
-            {
-                email: 'user@chicbloom.com',
-                password: 'user123',
-                name: 'Usuário',
-                role: 'user'
-            },
-            {
-                email: 'manager@chicbloom.com',
-                password: 'manager123',
-                name: 'Gerente',
-                role: 'manager'
-            },
-            {
-                email: 'rodrigo@chicbloom.com', 
-                password: 'digo1302',
-                name: 'Rodrigo',
-                role: 'manager'
-            }
-        ];
+  document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const errorMessage = document.getElementById('errorMessage');
+    const loginButton = document.getElementById('loginButton');
+    const buttonText = document.getElementById('buttonText');
+    
+    errorMessage.style.display = 'none';
+    loginButton.disabled = true;
+    buttonText.textContent = 'Entrando...';
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
-            const loginButton = document.getElementById('loginButton');
-            const buttonText = document.getElementById('buttonText');
-            
-            // Limpa mensagens de erro anteriores
-            errorMessage.style.display = 'none';
-            
-            // Validação básica
-            if (!email || !password) {
-                showError('Por favor, preencha todos os campos!');
-                return;
-            }
-            
-            // Mostra estado de carregamento
-            loginButton.disabled = true;
-            buttonText.textContent = 'Entrando...';
-            
-            // Simula delay de autenticação (opcional)
-            setTimeout(() => {
-                // Verifica as credenciais
-                const user = validCredentials.find(cred => 
-                    cred.email.toLowerCase() === email.toLowerCase() && 
-                    cred.password === password
-                );
-                
-                if (user) {
-                    // Login bem-sucedido
-                    const userData = {
-                        name: user.name,
-                        email: user.email,
-                        role: user.role,
-                        loggedIn: true,
-                        loginTime: new Date().toISOString()
-                    };
-                    
-                    // Armazena os dados do usuário no localStorage
-                    localStorage.setItem('userData', JSON.stringify(userData));
-                    
-                    // Sucesso visual
-                    buttonText.textContent = 'Login realizado!';
-                    loginButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                    loginButton.classList.add('bg-green-600');
-                    
-                    // Redireciona para o painel
-                    window.location.href = 'painel.html';
-                    
-                } else {
-                    // Credenciais inválidas
-                    showError('Email ou senha incorretos. Verifique suas credenciais e tente novamente.');
-                    resetButton();
-                }
-            }, 1000); // Simula 1 segundo de processamento
-        });
+    try {
+      const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+      const user = userCredential.user;
 
-        function showError(message) {
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-        }
+      if (user) {
+        // Dados no localStorage
+        localStorage.setItem('userData', JSON.stringify({
+          email: user.email,
+          uid: user.uid,
+          loggedIn: true,
+          loginTime: new Date().toISOString()
+        }));
 
-        function resetButton() {
-            const loginButton = document.getElementById('loginButton');
-            const buttonText = document.getElementById('buttonText');
-            
-            loginButton.disabled = false;
-            buttonText.textContent = 'Entrar';
-            loginButton.classList.remove('bg-green-600');
-            loginButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
-        }
+        buttonText.textContent = 'Login realizado!';
+        loginButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        loginButton.classList.add('bg-green-600');
 
-        // Função para preencher automaticamente as credenciais de teste
-        function fillTestCredentials() {
-            document.getElementById('email').value = 'admin@chicbloom.com';
-            document.getElementById('password').value = 'chicbloom123';
-        }
-    </script>
+        // Redireciona
+        window.location.href = 'painel.html';
+      }
+    } catch (error) {
+      showError("Credenciais inválidas ou usuário não autorizado.");
+      resetButton();
+    }
+  });
+
+  function showError(message) {
+    const errorMessage = document.getElementById('errorMessage');
+    errorMessage.textContent = message;
+    errorMessage.style.display = 'block';
+  }
+
+  function resetButton() {
+    const loginButton = document.getElementById('loginButton');
+    const buttonText = document.getElementById('buttonText');
+    loginButton.disabled = false;
+    buttonText.textContent = 'Entrar';
+    loginButton.classList.remove('bg-green-600');
+    loginButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+  }
+
+
+</script>
+<!-- Modal para redefinir senha -->
+<div id="resetPasswordModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex items-center justify-center">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+    <h3 class="text-lg font-bold mb-4 text-gray-800">Redefinir Senha</h3>
+    <input type="email" id="resetEmail" placeholder="Digite seu e-mail"
+      class="w-full border border-gray-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    <div class="flex justify-end space-x-2">
+      <button onclick="document.getElementById('resetPasswordModal').classList.add('hidden')"
+        class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancelar</button>
+      <button onclick="sendPasswordReset()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Enviar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Link "Esqueceu sua senha?"
+  document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('resetPasswordModal').classList.remove('hidden');
+  });
+
+  // Função para enviar e-mail de redefinição
+  function sendPasswordReset() {
+    const email = document.getElementById('resetEmail').value.trim();
+    if (!email) return alert('Por favor, digite seu e-mail.');
+    firebase.auth().sendPasswordResetEmail(email)
+      .then(() => {
+        alert('Link de redefinição enviado para ' + email);
+        document.getElementById('resetPasswordModal').classList.add('hidden');
+      })
+      .catch(error => {
+        alert('Erro: ' + error.message);
+      });
+  }
+</script>
+
 </body>
 </html>
